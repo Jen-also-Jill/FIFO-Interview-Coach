@@ -18,20 +18,20 @@ h1, h2, h3, p, .stMarkdown, label, li {
     color: #FFFFFF !important;
 }
 
-/* 3. FIX THE BUTTONS (Light Grey with Black Text) */
+/* 3. FIX THE BUTTONS (Dark Grey -> Light Grey on Hover) */
 .stButton > button {
-    background-color: #E0E0E0 !important; /* Light Grey */
-    color: #000000 !important;            /* Black Text */
-    border: 1px solid #000000 !important; /* Thin black border to define the shape */
+    background-color: #4A4A4A !important; /* Dark Grey Default */
+    color: #FFFFFF !important;            /* White Text */
+    border: 1px solid #FFFFFF !important; /* White Border */
     font-weight: bold !important;         
 }
 .stButton > button:hover {
-    background-color: #C0C0C0 !important; /* Slightly darker grey when hovering */
-    color: #000000 !important;
-    border: 1px solid #000000 !important;
+    background-color: #D3D3D3 !important; /* Light Grey when hovering */
+    color: #000000 !important;            /* Black Text when hovering */
+    border: 1px solid #000000 !important; /* Black Border when hovering */
 }
 
-/* 4. FIX THE DROPDOWN MENU (Make options Black) */
+/* 4. FIX THE DROPDOWN MENU */
 div[data-baseweb="select"] > div {
     color: #000000 !important;
 }
@@ -43,9 +43,9 @@ div[data-baseweb="popover"] div {
     color: #000000 !important;
 }
 
-/* 5. FIX THE COACH TIPS BOX (Professional Navy Blue) */
+/* 5. FIX THE COACH TIPS BOX (Navy Blue) */
 div[data-testid="stAlert"] {
-    background-color: #2C3E50 !important; /* Navy Blue */
+    background-color: #2C3E50 !important; 
     color: #FFFFFF !important;
     border: 2px solid #D9EAF7 !important;
     border-radius: 10px;
@@ -65,7 +65,7 @@ st.markdown(page_bg_color, unsafe_allow_html=True)
 st.title("🦺 FIFO Interview Coach")
 st.write("**Role:** Entry Level Utility")
 
-# --- CUSTOM OLIVE GREEN BANNER (No Border, Flat Design) ---
+# --- CUSTOM OLIVE GREEN BANNER ---
 st.markdown("""
     <div style='background-color: #556B2F; padding: 15px; border-radius: 5px; margin-bottom: 20px;'>
         <p style='color: white; margin: 0; font-size: 16px;'>
@@ -139,13 +139,13 @@ selected_label = st.selectbox("Select a Topic to Practice:", list(questions.keys
 question_text = questions[selected_label]
 
 # --- AUDIO GENERATION ---
-st.markdown(f"### 💬 Question:")
+st.markdown(f"### 🗣️ Question:")
 st.write(f"**{question_text}**")
 
 speech_file_path = "interview_question.mp3"
 
-if st.button("▶ Play to listen"):
-    with st.spinner("Loading ..."):
+if st.button("▶️ Play Audio Question"):
+    with st.spinner("Loading audio..."):
         try:
             response = client.audio.speech.create(
               model="tts-1",
