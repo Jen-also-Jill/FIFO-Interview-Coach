@@ -139,12 +139,12 @@ selected_label = st.selectbox("Select a Topic to Practice:", list(questions.keys
 question_text = questions[selected_label]
 
 # --- AUDIO GENERATION ---
-st.markdown(f"### 🗣️ Question:")
+st.markdown(f"### 💬 Question:")
 st.write(f"**{question_text}**")
 
 speech_file_path = "interview_question.mp3"
 
-if st.button("▶️ Play Audio Question"):
+if st.button("▶︎ Play to listen"):
     with st.spinner("Loading audio..."):
         try:
             response = client.audio.speech.create(
