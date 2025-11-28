@@ -43,15 +43,20 @@ div[data-baseweb="popover"] div {
 }
 
 /* 5. FIX THE COACH TIPS BOX (Professional Blue) */
-div[data-testid="stNotification"] {
+/* We target 'stAlert' which is the box used by st.success */
+div[data-testid="stAlert"] {
     background-color: #2C3E50 !important; /* Professional Navy Blue */
     color: #FFFFFF !important;            /* White Text */
-    border: 2px solid #D9EAF7 !important; /* Light Blue Border to match title */
+    border: 2px solid #D9EAF7 !important; /* Light Blue Border */
     border-radius: 10px;
 }
-/* Force text inside the box to be white */
-div[data-testid="stNotification"] p, div[data-testid="stNotification"] h1 {
+/* Force all text inside the alert box to be white */
+div[data-testid="stAlert"] * {
     color: #FFFFFF !important;
+}
+/* Change the checkmark icon color to white */
+div[data-testid="stAlert"] svg {
+    fill: #FFFFFF !important;
 }
 
 </style>
