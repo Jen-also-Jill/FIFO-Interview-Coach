@@ -5,9 +5,21 @@ import os
 # 1. Page Configuration
 st.set_page_config(page_title="FIFO Interview Coach", page_icon="🦺")
 
-st.title("🦺 FIFO Interview Coach (WHV Support)")
-st.write("**Role:** Entry Level Utility / Leasehand")
-st.info("👋 Hi! Practice your answers here. I will help you fix your English and give you better examples to use.")
+# --- DESIGN SECTION (Background Color) ---
+# You can change '#F0F2F6' to any color code you like.
+page_bg_color = """
+<style>
+.stApp {
+    background-color: #F0F2F6;
+}
+</style>
+"""
+st.markdown(page_bg_color, unsafe_allow_html=True)
+# ----------------------------------------
+
+st.title("🦺 FIFO Interview Coach")
+st.write("**Role:** Entry Level Utility")
+st.info("👋 Hi! Practice your answers here. I will help you fix your English and give you 'Insider Tips' on what HR wants to hear.")
 
 try:
     client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
@@ -91,28 +103,30 @@ if st.button("🔊 Play Audio Question"):
         except Exception as e:
             st.warning("Could not generate audio. Please read the text above.")
 
-# --- FEEDBACK LOGIC (SUPPORTIVE / WHV FRIENDLY) ---
+# --- FEEDBACK LOGIC (SUPPORTIVE + KEYWORDS) ---
 user_answer = st.text_area("Type your answer here:", height=150)
 
 if st.button("Get Helpful Feedback"):
     if not user_answer:
         st.warning("Please type your answer first!")
     else:
-        # HERE IS THE CHANGE: Supportive Coach Persona
         system_prompt = """
         You are a supportive Job Interview Coach helping candidates who speak English as a Second Language (ESL).
         The candidates are Backpackers (WHV) applying for entry-level mining jobs in Australia.
         
         Your Goal:
-        1. Be kind, encouraging, and clear. Do not be mean.
+        1. Be kind, encouraging, and clear.
         2. Keep the feedback simple (no big corporate words).
-        3. Help them improve their English phrasing.
+        3. Teach them the specific 'Keywords' that Australian Mining Recruiters look for.
 
         Output Structure (Use Markdown):
-        **👍 Feedback:** (Write 1 simple paragraph. Tell them what was good, and suggest one small improvement. Be positive!)
+        **👍 Feedback:** (Write 1 simple paragraph. Tell them what was good and fix any major English mistakes nicely.)
 
         **✨ Better ways to say it:**
-        (Provide 2 or 3 simple, strong example sentences they can memorize and use. Make these sound natural and professional).
+        (Provide 2 simple, strong example sentences they can memorize. Use simple grammar but professional words.)
+
+        **💡 Pro Tip (What HR wants to hear):**
+        (Explain ONE key concept or buzzword they should use for this specific question. E.g., 'Take 5', 'Duty of Care', 'Reliability', 'Hydration', 'SOPs'. Explain WHY the recruiter likes this word.)
         """
         
         with st.spinner("Coach is writing some tips for you..."):
