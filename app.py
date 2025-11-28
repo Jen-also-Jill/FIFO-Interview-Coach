@@ -3,82 +3,125 @@ from openai import OpenAI
 import os
 
 # 1. Page Configuration
-st.set_page_config(page_title="FIFO Interview Coach", page_icon="🦺")
+st.set_page_config(page_title="FIFO Interview Coach", page_icon="👔")
 
-# 2. Main Title and Introduction
-st.title("🦺 FIFO Job Interview Simulator")
+st.title("👔 FIFO Professional Interview Simulator")
 st.write("**Role:** Entry Level Utility / Leasehand")
-st.info("👋 G'day! Turn your volume up. I'm going to READ the questions to you now.")
+st.info("👋 Welcome. Select a question below to begin your formal interview assessment.")
 
-# 3. Securely access the API key
 try:
     client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 except:
     st.error("⚠️ OpenAI API Key is missing. Please set it in Streamlit Secrets.")
     st.stop()
 
-# 4. The Interview Logic (The Brain)
-system_prompt = """
-You are a tough but fair Australian Mining HR Recruiter named Bluey. 
-You are interviewing a candidate for an entry-level FIFO role (Utility/Leasehand).
-Your feedback must be based on: 
-1. SAFETY (Stop Work Authority is king).
-2. RESILIENCE (Can they handle 12hr shifts/heat/flies?).
-3. TEAM FIT (No drama, 'camp etiquette').
-Tone: Use light Australian slang (mate, swing, crib room), but be deadly serious about safety.
-"""
+# --- THE QUESTION BANK (15 Questions) ---
+questions = {
+    # Section 1: Motivation & Logistics
+    "Logistics: 1. Why FIFO?": 
+        "There are plenty of local jobs available right now. Why do you specifically want to start a FIFO career?",
+    
+    "Logistics: 2. Role Understanding": 
+        "This is an entry-level position. What is your understanding of the actual daily duties involved in this specific role?",
+    
+    "Logistics: 3. Availability": 
+        "If you were successful, how much notice do you need to give your current employer, and when would you be available to fly?",
+    
+    "Logistics: 4. Tickets & Licenses": 
+        "Do you currently hold a valid Driver’s License and a Construction White Card? Are there any other tickets you hold?",
 
-# 5. Question Selection
-category = st.selectbox(
-    "Select a Topic to Practice:",
-    ["The 'Safety' Question (Crucial)", "The 'Lifestyle' Question (Resilience)", "The 'Camp Life' Question (Conflict)"]
-)
+    # Section 2: The FIFO Lifestyle
+    "Lifestyle: 5. Remote Experience": 
+        "Have you ever lived or worked in a remote location with limited phone reception and amenities? How did you handle it?",
+    
+    "Lifestyle: 6. Night Shifts & Sleep": 
+        "This roster requires 12-hour shifts, including rotating night shifts. Have you worked irregular hours before, and how do you manage your sleep?",
+    
+    "Lifestyle: 7. Family & Isolation": 
+        "You will be away for weeks at a time, missing birthdays and weekends. Have you discussed this roster with your family or partner, and are they supportive?",
+    
+    "Lifestyle: 8. Camp Conflict (Dongas)": 
+        "You will be living in close quarters with your colleagues. How would you handle a situation where a neighbor is being loud or messy?",
 
-# Define the questions
-if category == "The 'Safety' Question (Crucial)":
-    question = "Safety is our number one priority. Tell me about a time you saw a hazard or something unsafe at work. What did you do?"
-elif category == "The 'Lifestyle' Question (Resilience)":
-    question = "The roster is two weeks on, one week off. You will miss birthdays and it is 40 degrees in the shade. Why do you think you can handle the FIFO lifestyle?"
-else:
-    question = "You are tired, it is day 13, and a crew mate is being difficult in the mess hall. How do you handle the conflict without causing drama?"
+    # Section 3: Safety (Crucial)
+    "Safety: 9. Unsafe Orders": 
+        "If a supervisor asked you to do a task you felt was unsafe or you weren't trained for, what would you do?",
+    
+    "Safety: 10. Hazard Identification": 
+        "Tell me about a time in a previous job where you saw a safety hazard. Did you report it or fix it?",
+    
+    "Safety: 11. Drugs & Alcohol": 
+        "We have a zero-tolerance policy for drugs and alcohol, including random testing on arrival. Is there any reason you would not pass a medical or drug screen next week?",
+    
+    "Safety: 12. Physical Fitness (Heat)": 
+        "The work is physically demanding and often performed in extreme heat. How do you currently maintain your physical fitness?",
 
-# --- NEW: AUDIO GENERATION PART ---
+    # Section 4: Work Ethic
+    "Work Ethic: 13. Repetitive Tasks": 
+        "Entry-level roles often involve repetitive, dirty, or labor-intensive tasks like cleaning or digging. How do you stay motivated when the work gets boring?",
+    
+    "Work Ethic: 14. Reliability": 
+        "Missing a flight affects the whole team. Can you give me an example of your reliability or punctuality in your last job?",
+    
+    "Work Ethic: 15. Following Procedures": 
+        "In mining, following Standard Operating Procedures (SOPs) is critical. Can you describe a time you had to follow strict rules to complete a job?"
+}
+# -------------------------
+
+# Select the question
+selected_label = st.selectbox("Select a Topic to Practice:", list(questions.keys()))
+question_text = questions[selected_label]
+
+# --- AUDIO GENERATION ---
 st.markdown(f"### 🗣️ Question:")
-st.write(f"**{question}**")
+st.write(f"**{question_text}**")
 
-# This creates the audio file from the text
 speech_file_path = "interview_question.mp3"
-with st.spinner("Bluey is clearing his throat..."):
-    response = client.audio.speech.create(
-      model="tts-1",
-      voice="onyx", # Options: alloy, echo, fable, onyx, nova, and shimmer
-      input=question
-    )
-    response.stream_to_file(speech_file_path)
 
-# This plays the audio
-st.audio(speech_file_path, format="audio/mp3")
-# ----------------------------------
+if st.button("🔊 Play Audio Question"):
+    with st.spinner("Loading audio..."):
+        try:
+            response = client.audio.speech.create(
+              model="tts-1",
+              voice="onyx", 
+              input=question_text
+            )
+            response.stream_to_file(speech_file_path)
+            st.audio(speech_file_path, format="audio/mp3")
+        except Exception as e:
+            st.warning("Could not generate audio. Please read the text above.")
 
-# 6. User Answer Input
-user_answer = st.text_area("Type your answer here:", height=150, placeholder="Example: 'In my last job, I noticed...'")
+# --- FEEDBACK LOGIC (UPDATED FOR FORMAL TONE) ---
+user_answer = st.text_area("Type your answer here:", height=150)
 
-# 7. The Feedback Button
-if st.button("Get Feedback from Bluey"):
+if st.button("Get Professional Feedback"):
     if not user_answer:
-        st.warning("Please type an answer first, mate!")
+        st.warning("Please enter your response before submitting.")
     else:
-        with st.spinner("Reviewing your answer against site safety protocols..."):
-            try:
-                response = client.chat.completions.create(
-                    model="gpt-4o-mini",
-                    messages=[
-                        {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": f"The Question: {question}. Candidate Answer: {user_answer}. Critique this answer."}
-                    ]
-                )
-                feedback = response.choices[0].message.content
-                st.success("✅ **Feedback:**")
-                st.markdown(feedback)
-            except Exception as e:
-                st.error(f"An error occurred: {e}")
+        # HERE IS THE CHANGE: New "System Prompt" for Formal HR Persona
+        system_prompt = """
+        You are 'Sarah', a Senior Talent Acquisition Specialist for a Tier 1 Australian Mining Company.
+        Your goal is to evaluate the candidate's answer for a FIFO entry-level role.
+        
+        Evaluation Criteria:
+        1. Safety Culture: Does the candidate understand 'Duty of Care' and 'Stop Work Authority'?
+        2. Resilience: Is the candidate realistic about the hardships of site life?
+        3. Professionalism: Is the answer structured and mature?
+
+        Tone:
+        - Professional, corporate, and constructive.
+        - Avoid Australian slang (no 'mate', 'good on ya').
+        - Use business terminology (e.g., 'mitigate risk', 'team alignment', 'proactive').
+        - Be encouraging but strict on safety standards.
+        """
+        
+        with st.spinner("HR Manager is assessing your response..."):
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": f"Question: {question_text}. Candidate Answer: {user_answer}. Please provide a formal assessment."}
+                ]
+            )
+            st.success("📝 **Assessment:**")
+            st.markdown(response.choices[0].message.content)
