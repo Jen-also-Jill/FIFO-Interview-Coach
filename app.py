@@ -5,20 +5,30 @@ import os
 # 1. Page Configuration
 st.set_page_config(page_title="FIFO Interview Coach", page_icon="🦺")
 
-# --- DESIGN SECTION (Background Color) ---
-# You can change '#F0F2F6' to any color code you like.
+# --- DESIGN SECTION (Background Color based on photo) ---
 page_bg_color = """
 <style>
+/* Main Background Color (Dusty Red-Brown) */
 .stApp {
-    background-color: #F0F2F6;
+    background-color: #A55D35;
 }
+
+/* Change Title text color to stand out (Sky Blue) */
+h1 {
+    color: #D9EAF7 !important;
+}
+/* Change typical text color to white for readability */
+p, .stMarkdown, .st-emotion-cache-10trblm {
+    color: #FFFFFF !important;
+}
+
 </style>
 """
 st.markdown(page_bg_color, unsafe_allow_html=True)
 # ----------------------------------------
 
-st.title("🦺 FIFO Interview Coach")
-st.write("**Role:** Entry Level Utility")
+st.title("🦺 FIFO Interview Coach (WHV Support)")
+st.write("**Role:** Entry Level Utility / Leasehand")
 st.info("👋 Hi! Practice your answers here. I will help you fix your English and give you 'Insider Tips' on what HR wants to hear.")
 
 try:
