@@ -30,31 +30,28 @@ h1, h2, h3, p, .stMarkdown, label, li {
     color: #FFFFFF !important;
 }
 
-/* 4. FIX THE DROPDOWN MENU (Make options Black so you can see them!) */
+/* 4. FIX THE DROPDOWN MENU (Make options Black) */
 div[data-baseweb="select"] > div {
-    color: #000000 !important; /* The selected item text */
+    color: #000000 !important;
 }
 div[data-baseweb="popover"] li {
-    color: #000000 !important; /* The list items text */
-    background-color: #FFFFFF !important; /* Ensure background is white */
+    color: #000000 !important;
+    background-color: #FFFFFF !important;
 }
 div[data-baseweb="popover"] div {
-    color: #000000 !important; /* Fallback for other elements in dropdown */
+    color: #000000 !important;
 }
 
-/* 5. FIX THE COACH TIPS BOX (Professional Blue) */
-/* We target 'stAlert' which is the box used by st.success */
+/* 5. FIX THE COACH TIPS BOX (Professional Navy Blue - Bottom Box) */
 div[data-testid="stAlert"] {
-    background-color: #2C3E50 !important; /* Professional Navy Blue */
-    color: #FFFFFF !important;            /* White Text */
-    border: 2px solid #D9EAF7 !important; /* Light Blue Border */
+    background-color: #2C3E50 !important; /* Navy Blue */
+    color: #FFFFFF !important;
+    border: 2px solid #D9EAF7 !important;
     border-radius: 10px;
 }
-/* Force all text inside the alert box to be white */
 div[data-testid="stAlert"] * {
     color: #FFFFFF !important;
 }
-/* Change the checkmark icon color to white */
 div[data-testid="stAlert"] svg {
     fill: #FFFFFF !important;
 }
@@ -66,7 +63,16 @@ st.markdown(page_bg_color, unsafe_allow_html=True)
 
 st.title("🦺 FIFO Interview Coach")
 st.write("**Role:** Entry Level Utility")
-st.info("👋🏻 Hi! I will help you fix your English and give you 'Insider Tips' on what HR wants to hear.")
+
+# --- NEW: CUSTOM OLIVE GREEN BANNER (No Border, Flat Design) ---
+st.markdown("""
+    <div style='background-color: #556B2F; padding: 15px; border-radius: 5px; margin-bottom: 20px;'>
+        <p style='color: white; margin: 0; font-size: 16px;'>
+        👋🏻 Hi! I will help you fix your English and give you 'Insider Tips' on what HR wants to hear.
+        </p>
+    </div>
+""", unsafe_allow_html=True)
+# -------------------------------------------------------------
 
 try:
     client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
