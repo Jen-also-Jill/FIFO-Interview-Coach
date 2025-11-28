@@ -3,11 +3,11 @@ from openai import OpenAI
 import os
 
 # 1. Page Configuration
-st.set_page_config(page_title="FIFO Interview Coach", page_icon="👔")
+st.set_page_config(page_title="FIFO Interview Coach", page_icon="🦺")
 
-st.title("👔 FIFO Professional Interview Simulator")
+st.title("🦺 FIFO Interview Coach (WHV Support)")
 st.write("**Role:** Entry Level Utility / Leasehand")
-st.info("👋 Welcome. Select a question below to begin your formal interview assessment.")
+st.info("👋 Hi! Practice your answers here. I will help you fix your English and give you better examples to use.")
 
 try:
     client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
@@ -91,37 +91,37 @@ if st.button("🔊 Play Audio Question"):
         except Exception as e:
             st.warning("Could not generate audio. Please read the text above.")
 
-# --- FEEDBACK LOGIC (UPDATED FOR FORMAL TONE) ---
+# --- FEEDBACK LOGIC (SUPPORTIVE / WHV FRIENDLY) ---
 user_answer = st.text_area("Type your answer here:", height=150)
 
-if st.button("Get Professional Feedback"):
+if st.button("Get Helpful Feedback"):
     if not user_answer:
-        st.warning("Please enter your response before submitting.")
+        st.warning("Please type your answer first!")
     else:
-        # HERE IS THE CHANGE: New "System Prompt" for Formal HR Persona
+        # HERE IS THE CHANGE: Supportive Coach Persona
         system_prompt = """
-        You are 'Sarah', a Senior Talent Acquisition Specialist for a Tier 1 Australian Mining Company.
-        Your goal is to evaluate the candidate's answer for a FIFO entry-level role.
+        You are a supportive Job Interview Coach helping candidates who speak English as a Second Language (ESL).
+        The candidates are Backpackers (WHV) applying for entry-level mining jobs in Australia.
         
-        Evaluation Criteria:
-        1. Safety Culture: Does the candidate understand 'Duty of Care' and 'Stop Work Authority'?
-        2. Resilience: Is the candidate realistic about the hardships of site life?
-        3. Professionalism: Is the answer structured and mature?
+        Your Goal:
+        1. Be kind, encouraging, and clear. Do not be mean.
+        2. Keep the feedback simple (no big corporate words).
+        3. Help them improve their English phrasing.
 
-        Tone:
-        - Professional, corporate, and constructive.
-        - Avoid Australian slang (no 'mate', 'good on ya').
-        - Use business terminology (e.g., 'mitigate risk', 'team alignment', 'proactive').
-        - Be encouraging but strict on safety standards.
+        Output Structure (Use Markdown):
+        **👍 Feedback:** (Write 1 simple paragraph. Tell them what was good, and suggest one small improvement. Be positive!)
+
+        **✨ Better ways to say it:**
+        (Provide 2 or 3 simple, strong example sentences they can memorize and use. Make these sound natural and professional).
         """
         
-        with st.spinner("HR Manager is assessing your response..."):
+        with st.spinner("Coach is writing some tips for you..."):
             response = client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=[
                     {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": f"Question: {question_text}. Candidate Answer: {user_answer}. Please provide a formal assessment."}
+                    {"role": "user", "content": f"Question: {question_text}. Candidate Answer: {user_answer}. Help them improve."}
                 ]
             )
-            st.success("📝 **Assessment:**")
+            st.success("📝 **Coach's Tips:**")
             st.markdown(response.choices[0].message.content)
