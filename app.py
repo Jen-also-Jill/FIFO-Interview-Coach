@@ -5,19 +5,6 @@ import os
 # 1. Page Configuration
 st.set_page_config(page_title="FIFO Interview Coach", page_icon="🦺")
 
-# --- 🔒 SECURITY SECTION (PASSWORD PROTECTION) ---
-# CHANGE YOUR PASSWORD HERE:
-SECRET_PASSWORD = "FIFO-2026-WITH-JEN" 
-
-# Create a sidebar for the password
-password_guess = st.sidebar.text_input("🔒 Enter Password to Login:", type="password")
-
-if password_guess != SECRET_PASSWORD:
-    st.title("🔒 Restricted Access")
-    st.error("This tool is private. Please enter the correct password in the sidebar to continue.")
-    st.stop()  # This stops the app from loading the rest of the code!
-# ------------------------------------------------
-
 # --- DESIGN SECTION ---
 page_bg_color = """
 <style>
@@ -27,21 +14,21 @@ page_bg_color = """
 }
 
 /* 2. Text Color (White for visibility) */
-h1, h2, h3, p, .stMarkdown, label, li {
+h1, h2, h3, p, .stMarkdown, label, li, .stTextInput > label {
     color: #FFFFFF !important;
 }
 
 /* 3. FIX THE BUTTONS (Dark Grey -> Light Grey on Hover) */
 .stButton > button {
-    background-color: #4A4A4A !important; /* Dark Grey Default */
-    color: #FFFFFF !important;            /* White Text */
-    border: 1px solid #FFFFFF !important; /* White Border */
+    background-color: #4A4A4A !important; 
+    color: #FFFFFF !important;            
+    border: 1px solid #FFFFFF !important; 
     font-weight: bold !important;         
 }
 .stButton > button:hover {
-    background-color: #D3D3D3 !important; /* Light Grey when hovering */
-    color: #000000 !important;            /* Black Text when hovering */
-    border: 1px solid #000000 !important; /* Black Border when hovering */
+    background-color: #D3D3D3 !important; 
+    color: #000000 !important;            
+    border: 1px solid #000000 !important; 
 }
 
 /* 4. FIX THE DROPDOWN MENU */
@@ -75,6 +62,31 @@ div[data-testid="stAlert"] svg {
 st.markdown(page_bg_color, unsafe_allow_html=True)
 # ----------------------------------------
 
+# --- 🔒 SECURITY SECTION (UPDATED FOR MOBILE) ---
+SECRET_PASSWORD = "FIFO-2026-WITHJ" 
+
+# Check if password is already correct in session state (so it remembers them)
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+
+if not st.session_state.authenticated:
+    st.title("🔒 Client Login")
+    st.write("Please enter the access code to continue.")
+    
+    # Password box in the MAIN CENTER (Better for mobile)
+    password_guess = st.text_input("Password:", type="password", placeholder="Enter code here...")
+    
+    if st.button("Login"):
+        if password_guess == SECRET_PASSWORD:
+            st.session_state.authenticated = True
+            st.rerun() # Refresh the page to show the app
+        else:
+            st.error("Incorrect password. Please try again.")
+    
+    st.stop() # Stop here if not logged in
+# ------------------------------------------------
+
+# IF LOGGED IN, SHOW THE APP:
 st.title("🦺 FIFO Interview Coach")
 st.write("**Role:** Entry Level Utility")
 
@@ -157,7 +169,7 @@ st.write(f"**{question_text}**")
 
 speech_file_path = "interview_question.mp3"
 
-if st.button("▶︎ Play to listen"):
+if st.button(" ▶︎ Play to listen"):
     with st.spinner("Loading ..."):
         try:
             response = client.audio.speech.create(
@@ -173,7 +185,7 @@ if st.button("▶︎ Play to listen"):
 # --- FEEDBACK LOGIC (SUPPORTIVE + KEYWORDS) ---
 user_answer = st.text_area("Type your answer here:", height=150)
 
-if st.button("Get Feedback"):
+if st.button("Get Helpful Feedback"):
     if not user_answer:
         st.warning("Please type your answer first!")
     else:
