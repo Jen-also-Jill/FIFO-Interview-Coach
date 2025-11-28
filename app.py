@@ -5,23 +5,35 @@ import os
 # 1. Page Configuration
 st.set_page_config(page_title="FIFO Interview Coach", page_icon="🦺")
 
-# --- DESIGN SECTION (Background Color based on photo) ---
+# --- DESIGN SECTION ---
 page_bg_color = """
 <style>
-/* Main Background Color (Dusty Red-Brown) */
+/* 1. Main Background Color (Your Sage Green) */
 .stApp {
     background-color: #828f7e;
 }
 
-/* Change Title text color to stand out (Sky Blue) */
-h1 {
-    color: #D9EAF7 !important;
-}
-/* Change typical text color to white for readability */
-p, .stMarkdown, .st-emotion-cache-10trblm {
+/* 2. Text Color (White for visibility) */
+h1, h2, h3, p, .stMarkdown, label, li {
     color: #FFFFFF !important;
 }
 
+/* 3. FIX THE BUTTONS (Make them visible!) */
+.stButton > button {
+    background-color: #A55D35 !important; /* Safety Orange/Brown */
+    color: #FFFFFF !important;            /* White Text */
+    border: 1px solid #FFFFFF !important; /* Add a white border */
+    font-weight: bold !important;         /* Make text thick */
+}
+.stButton > button:hover {
+    background-color: #8c4b2b !important; /* Slightly darker when you hover */
+    color: #FFFFFF !important;
+}
+
+/* 4. Fix the Dropdown Text (Black text so it is readable inside the white box) */
+div[data-baseweb="select"] > div {
+    color: #000000 !important;
+}
 </style>
 """
 st.markdown(page_bg_color, unsafe_allow_html=True)
