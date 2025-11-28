@@ -18,16 +18,17 @@ h1, h2, h3, p, .stMarkdown, label, li {
     color: #FFFFFF !important;
 }
 
-/* 3. FIX THE BUTTONS (Safety Orange) */
+/* 3. FIX THE BUTTONS (Light Grey with Black Text) */
 .stButton > button {
-    background-color: #A55D35 !important; 
-    color: #FFFFFF !important;            
-    border: 1px solid #FFFFFF !important; 
+    background-color: #E0E0E0 !important; /* Light Grey */
+    color: #000000 !important;            /* Black Text */
+    border: 1px solid #000000 !important; /* Thin black border to define the shape */
     font-weight: bold !important;         
 }
 .stButton > button:hover {
-    background-color: #8c4b2b !important; 
-    color: #FFFFFF !important;
+    background-color: #C0C0C0 !important; /* Slightly darker grey when hovering */
+    color: #000000 !important;
+    border: 1px solid #000000 !important;
 }
 
 /* 4. FIX THE DROPDOWN MENU (Make options Black) */
@@ -42,7 +43,7 @@ div[data-baseweb="popover"] div {
     color: #000000 !important;
 }
 
-/* 5. FIX THE COACH TIPS BOX (Professional Navy Blue - Bottom Box) */
+/* 5. FIX THE COACH TIPS BOX (Professional Navy Blue) */
 div[data-testid="stAlert"] {
     background-color: #2C3E50 !important; /* Navy Blue */
     color: #FFFFFF !important;
@@ -64,7 +65,7 @@ st.markdown(page_bg_color, unsafe_allow_html=True)
 st.title("🦺 FIFO Interview Coach")
 st.write("**Role:** Entry Level Utility")
 
-# --- NEW: CUSTOM OLIVE GREEN BANNER (No Border, Flat Design) ---
+# --- CUSTOM OLIVE GREEN BANNER (No Border, Flat Design) ---
 st.markdown("""
     <div style='background-color: #556B2F; padding: 15px; border-radius: 5px; margin-bottom: 20px;'>
         <p style='color: white; margin: 0; font-size: 16px;'>
@@ -138,13 +139,13 @@ selected_label = st.selectbox("Select a Topic to Practice:", list(questions.keys
 question_text = questions[selected_label]
 
 # --- AUDIO GENERATION ---
-st.markdown(f"### 🗣️ Question:")
+st.markdown(f"### 💬 Question:")
 st.write(f"**{question_text}**")
 
 speech_file_path = "interview_question.mp3"
 
-if st.button("🔊 Play Audio Question"):
-    with st.spinner("Loading audio..."):
+if st.button("▶ Play to listen"):
+    with st.spinner("Loading ..."):
         try:
             response = client.audio.speech.create(
               model="tts-1",
