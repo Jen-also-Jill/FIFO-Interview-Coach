@@ -5,6 +5,19 @@ import os
 # 1. Page Configuration
 st.set_page_config(page_title="FIFO Interview Coach", page_icon="🦺")
 
+# --- 🔒 SECURITY SECTION (PASSWORD PROTECTION) ---
+# CHANGE YOUR PASSWORD HERE:
+SECRET_PASSWORD = "FIFO-2026-WITH-JEN" 
+
+# Create a sidebar for the password
+password_guess = st.sidebar.text_input("🔒 Enter Password to Login:", type="password")
+
+if password_guess != SECRET_PASSWORD:
+    st.title("🔒 Restricted Access")
+    st.error("This tool is private. Please enter the correct password in the sidebar to continue.")
+    st.stop()  # This stops the app from loading the rest of the code!
+# ------------------------------------------------
+
 # --- DESIGN SECTION ---
 page_bg_color = """
 <style>
@@ -145,7 +158,7 @@ st.write(f"**{question_text}**")
 speech_file_path = "interview_question.mp3"
 
 if st.button("▶︎ Play to listen"):
-    with st.spinner("Loading audio..."):
+    with st.spinner("Loading ..."):
         try:
             response = client.audio.speech.create(
               model="tts-1",
@@ -160,7 +173,7 @@ if st.button("▶︎ Play to listen"):
 # --- FEEDBACK LOGIC (SUPPORTIVE + KEYWORDS) ---
 user_answer = st.text_area("Type your answer here:", height=150)
 
-if st.button("Get Helpful Feedback"):
+if st.button("Get Feedback"):
     if not user_answer:
         st.warning("Please type your answer first!")
     else:
