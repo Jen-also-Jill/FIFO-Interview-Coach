@@ -8,7 +8,7 @@ st.set_page_config(page_title="FIFO Interview Coach", page_icon="🦺")
 # --- DESIGN SECTION ---
 page_bg_color = """
 <style>
-/* 1. Main Background Color (Your Sage Green) */
+/* 1. Main Background Color (Sage Green) */
 .stApp {
     background-color: #828f7e;
 }
@@ -18,22 +18,42 @@ h1, h2, h3, p, .stMarkdown, label, li {
     color: #FFFFFF !important;
 }
 
-/* 3. FIX THE BUTTONS (Make them visible!) */
+/* 3. FIX THE BUTTONS (Safety Orange) */
 .stButton > button {
-    background-color: #A55D35 !important; /* Safety Orange/Brown */
-    color: #FFFFFF !important;            /* White Text */
-    border: 1px solid #FFFFFF !important; /* Add a white border */
-    font-weight: bold !important;         /* Make text thick */
+    background-color: #A55D35 !important; 
+    color: #FFFFFF !important;            
+    border: 1px solid #FFFFFF !important; 
+    font-weight: bold !important;         
 }
 .stButton > button:hover {
-    background-color: #8c4b2b !important; /* Slightly darker when you hover */
+    background-color: #8c4b2b !important; 
     color: #FFFFFF !important;
 }
 
-/* 4. Fix the Dropdown Text (Black text so it is readable inside the white box) */
+/* 4. FIX THE DROPDOWN MENU (Make options Black so you can see them!) */
 div[data-baseweb="select"] > div {
-    color: #000000 !important;
+    color: #000000 !important; /* The selected item text */
 }
+div[data-baseweb="popover"] li {
+    color: #000000 !important; /* The list items text */
+    background-color: #FFFFFF !important; /* Ensure background is white */
+}
+div[data-baseweb="popover"] div {
+    color: #000000 !important; /* Fallback for other elements in dropdown */
+}
+
+/* 5. FIX THE COACH TIPS BOX (Professional Blue) */
+div[data-testid="stNotification"] {
+    background-color: #2C3E50 !important; /* Professional Navy Blue */
+    color: #FFFFFF !important;            /* White Text */
+    border: 2px solid #D9EAF7 !important; /* Light Blue Border to match title */
+    border-radius: 10px;
+}
+/* Force text inside the box to be white */
+div[data-testid="stNotification"] p, div[data-testid="stNotification"] h1 {
+    color: #FFFFFF !important;
+}
+
 </style>
 """
 st.markdown(page_bg_color, unsafe_allow_html=True)
