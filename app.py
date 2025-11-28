@@ -10,7 +10,7 @@ page_bg_color = """
 <style>
 /* Main Background Color (Dusty Red-Brown) */
 .stApp {
-    background-color: #A55D35;
+    background-color: #4d382b;
 }
 
 /* Change Title text color to stand out (Sky Blue) */
