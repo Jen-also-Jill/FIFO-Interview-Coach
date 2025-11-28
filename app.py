@@ -10,7 +10,7 @@ page_bg_color = """
 <style>
 /* Main Background Color (Dusty Red-Brown) */
 .stApp {
-    background-color: #4d382b;
+    background-color: #828f7e;
 }
 
 /* Change Title text color to stand out (Sky Blue) */
@@ -27,9 +27,9 @@ p, .stMarkdown, .st-emotion-cache-10trblm {
 st.markdown(page_bg_color, unsafe_allow_html=True)
 # ----------------------------------------
 
-st.title("🦺 FIFO Interview Coach (WHV Support)")
-st.write("**Role:** Entry Level Utility / Leasehand")
-st.info("👋 Hi! Practice your answers here. I will help you fix your English and give you 'Insider Tips' on what HR wants to hear.")
+st.title("🦺 FIFO Interview Coach")
+st.write("**Role:** Entry Level Utility")
+st.info("👋🏻 Hi! I will help you fix your English and give you 'Insider Tips' on what HR wants to hear.")
 
 try:
     client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
@@ -130,7 +130,7 @@ if st.button("Get Helpful Feedback"):
         3. Teach them the specific 'Keywords' that Australian Mining Recruiters look for.
 
         Output Structure (Use Markdown):
-        **👍 Feedback:** (Write 1 simple paragraph. Tell them what was good and fix any major English mistakes nicely.)
+        **👍🏻 Feedback:** (Write 1 simple paragraph. Tell them what was good and fix any major English mistakes nicely.)
 
         **✨ Better ways to say it:**
         (Provide 2 simple, strong example sentences they can memorize. Use simple grammar but professional words.)
