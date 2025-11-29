@@ -62,10 +62,15 @@ div[data-testid="stAlert"] svg {
 st.markdown(page_bg_color, unsafe_allow_html=True)
 # ----------------------------------------
 
-# --- 🔒 SECURITY SECTION (UPDATED FOR MOBILE) ---
-SECRET_PASSWORD = "FIFO-2026-WITHJ" 
+# --- 🔒 SECURITY SECTION (SECURE VERSION) ---
+# This looks for the password inside Streamlit Secrets
+try:
+    SECRET_PASSWORD = st.secrets["APP_PASSWORD"]
+except:
+    st.error("⚠️ Password missing in Secrets! Go to Streamlit Settings -> Secrets and add APP_PASSWORD = 'yourpassword'")
+    st.stop()
 
-# Check if password is already correct in session state (so it remembers them)
+# Check if password is already correct in session state
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 
@@ -73,13 +78,13 @@ if not st.session_state.authenticated:
     st.title("🔒 FIFO Path Login")
     st.write("Please enter the access code to continue.")
     
-    # Password box in the MAIN CENTER (Better for mobile)
+    # Password box in the MAIN CENTER (Mobile Friendly)
     password_guess = st.text_input("Password:", type="password", placeholder="Enter code here...")
     
     if st.button("Login"):
         if password_guess == SECRET_PASSWORD:
             st.session_state.authenticated = True
-            st.rerun() # Refresh the page to show the app
+            st.rerun() # Refresh the page
         else:
             st.error("Incorrect password. Please try again.")
     
