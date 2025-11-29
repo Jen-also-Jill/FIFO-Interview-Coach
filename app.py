@@ -57,6 +57,11 @@ div[data-testid="stAlert"] svg {
     fill: #FFFFFF !important;
 }
 
+/* 6. HIDE STREAMLIT BRANDING (The "White Label" Hack) */
+#MainMenu {visibility: hidden;} /* Hides the hamburger menu at top right */
+footer {visibility: hidden;}    /* Hides "Made with Streamlit" at bottom */
+header {visibility: hidden;}    /* Hides the top colored bar */
+
 </style>
 """
 st.markdown(page_bg_color, unsafe_allow_html=True)
