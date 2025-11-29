@@ -57,10 +57,13 @@ div[data-testid="stAlert"] svg {
     fill: #FFFFFF !important;
 }
 
-/* 6. HIDE STREAMLIT BRANDING (The "White Label" Hack) */
-#MainMenu {visibility: hidden;} /* Hides the hamburger menu at top right */
-footer {visibility: hidden;}    /* Hides "Made with Streamlit" at bottom */
-header {visibility: hidden;}    /* Hides the top colored bar */
+/* 6. REMOVE STREAMLIT BRANDING (The "Nuclear" Option for Mobile) */
+#MainMenu {display: none !important;}
+footer {display: none !important;}
+header {display: none !important;}
+div[data-testid="stToolbar"] {display: none !important;}
+div[data-testid="stDecoration"] {display: none !important;}
+div[data-testid="stStatusWidget"] {display: none !important;}
 
 </style>
 """
