@@ -57,13 +57,18 @@ div[data-testid="stAlert"] svg {
     fill: #FFFFFF !important;
 }
 
-/* 6. REMOVE STREAMLIT BRANDING (The "Nuclear" Option for Mobile) */
-#MainMenu {display: none !important;}
-footer {display: none !important;}
-header {display: none !important;}
-div[data-testid="stToolbar"] {display: none !important;}
-div[data-testid="stDecoration"] {display: none !important;}
-div[data-testid="stStatusWidget"] {display: none !important;}
+/* 6. CAMOUFLAGE THE FOOTER (The Chameleon Strategy) */
+/* Attempt to hide it completely */
+footer {visibility: hidden !important;}
+#MainMenu {visibility: hidden !important;}
+header {visibility: hidden !important;}
+
+/* If the mobile badge persists, turn it Sage Green so it disappears */
+div[class*="viewerBadge"] {
+    background-color: #828f7e !important; /* Match page background */
+    color: #828f7e !important;            /* Make text same color as background */
+    display: none !important;             /* Try to delete it first */
+}
 
 </style>
 """
