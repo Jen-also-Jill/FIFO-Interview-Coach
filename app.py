@@ -201,7 +201,7 @@ if st.button(" ▶︎ Play to listen"):
             st.warning("Could not generate audio. Please read the text above.")
 
 # --- FEEDBACK LOGIC (SUPPORTIVE + KEYWORDS) ---
-user_answer = st.text_area("Type your answer here:", height=150)
+user_answer = st.text_area("Type your answer here:", height=150, key=f"answer_{selected_label}")
 
 if st.button("Get Helpful Feedback"):
     if not user_answer:
