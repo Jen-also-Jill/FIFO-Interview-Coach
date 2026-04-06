@@ -58,32 +58,27 @@ div[data-testid="stAlert"] svg {
 }
 
 /* 6. CAMOUFLAGE THE FOOTER (The Chameleon Strategy) */
-/* Attempt to hide it completely */
 footer {visibility: hidden !important;}
 #MainMenu {visibility: hidden !important;}
 header {visibility: hidden !important;}
 
-/* If the mobile badge persists, turn it Sage Green so it disappears */
 div[class*="viewerBadge"] {
-    background-color: #828f7e !important; /* Match page background */
-    color: #828f7e !important;            /* Make text same color as background */
-    display: none !important;             /* Try to delete it first */
+    background-color: #828f7e !important;
+    color: #828f7e !important;
+    display: none !important;
 }
 
 </style>
 """
 st.markdown(page_bg_color, unsafe_allow_html=True)
-# ----------------------------------------
 
 # --- 🔒 SECURITY SECTION (SECURE VERSION) ---
-# This looks for the password inside Streamlit Secrets
 try:
     SECRET_PASSWORD = st.secrets["APP_PASSWORD"]
 except:
     st.error("⚠️ Password missing in Secrets! Go to Streamlit Settings -> Secrets and add APP_PASSWORD = 'yourpassword'")
     st.stop()
 
-# Check if password is already correct in session state
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 
@@ -91,18 +86,16 @@ if not st.session_state.authenticated:
     st.title("🔒 FIFO Path Login")
     st.write("Please enter the access code to continue.")
     
-    # Password box in the MAIN CENTER (Mobile Friendly)
     password_guess = st.text_input("Password:", type="password", placeholder="Enter code here...")
     
     if st.button("Login"):
         if password_guess == SECRET_PASSWORD:
             st.session_state.authenticated = True
-            st.rerun() # Refresh the page
+            st.rerun()
         else:
             st.error("Incorrect password. Please try again.")
     
-    st.stop() # Stop here if not logged in
-# ------------------------------------------------
+    st.stop()
 
 # IF LOGGED IN, SHOW THE APP:
 st.title("🦺 FIFO Interview Coach")
@@ -116,7 +109,6 @@ st.markdown("""
         </p>
     </div>
 """, unsafe_allow_html=True)
-# -------------------------------------------------------------
 
 try:
     client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
@@ -137,7 +129,7 @@ questions = {
         "If you were successful, how much notice do you need to give your current employer, and when would you be available to fly?",
     
     "Logistics: 4. Tickets & Licenses": 
-        "Do you currently hold a valid Driver’s License and a Construction White Card? Are there any other tickets you hold?",
+        "Do you currently hold a valid Driver's License and a Construction White Card? Are there any other tickets you hold?",
 
     # Section 2: The FIFO Lifestyle
     "Lifestyle: 5. Remote Experience": 
@@ -175,30 +167,38 @@ questions = {
     "Work Ethic: 15. Following Procedures": 
         "In mining, following Standard Operating Procedures (SOPs) is critical. Can you describe a time you had to follow strict rules to complete a job?"
 }
-# -------------------------
 
-# Select the question
+# --- SELECT QUESTION ---
 selected_label = st.selectbox("Select a Topic to Practice:", list(questions.keys()))
 question_text = questions[selected_label]
 
-# --- AUDIO GENERATION ---
+# --- VOICE SELECTOR (NEW) ---
+st.markdown("🎙️ **Choose Interviewer Voice:**")
+voice_option = st.selectbox(
+    "Pick a voice style:",
+    options=["fable", "onyx", "echo", "alloy"],
+    index=0,
+    help="Fable = closest to Australian male | Onyx = deep & authoritative | Echo = younger male | Alloy = neutral"
+)
+
+# --- QUESTION DISPLAY ---
 st.markdown(f"### 💬 Question:")
 st.write(f"**{question_text}**")
 
-speech_file_path = "interview_question.mp3"
-
+# --- AUDIO GENERATION (FIXED FOR iOS) ---
 if st.button(" ▶︎ Play to listen"):
     with st.spinner("Loading ..."):
         try:
             response = client.audio.speech.create(
-              model="tts-1",
-              voice="onyx", 
-              input=question_text
+                model="tts-1",
+                voice=voice_option,         # ← uses selected voice
+                input=question_text,
+                response_format="mp3"       # ← explicit MP3 for iOS fix
             )
-            response.stream_to_file(speech_file_path)
-            st.audio(speech_file_path, format="audio/mp3")
+            audio_bytes = response.content  # ← raw bytes, not file path
+            st.audio(audio_bytes, format="audio/mp3")
         except Exception as e:
-            st.warning("Could not generate audio. Please read the text above.")
+            st.warning(f"Could not generate audio: {e}")
 
 # --- FEEDBACK LOGIC (SUPPORTIVE + KEYWORDS) ---
 user_answer = st.text_area("Type your answer here:", height=150, key=f"answer_{selected_label}")
