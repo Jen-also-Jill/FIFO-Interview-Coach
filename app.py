@@ -1,6 +1,7 @@
 import streamlit as st
 from openai import OpenAI
-import os
+import extra_streamlit_components as stx
+from datetime import datetime, timedelta
 
 # 1. Page Configuration
 st.set_page_config(page_title="FIFO Interview Coach", page_icon="🦺")
@@ -33,7 +34,9 @@ h1, h2, h3, p, .stMarkdown, label, li, .stTextInput > label {
 
 /* 4. FIX THE DROPDOWN MENU */
 div[data-baseweb="select"] > div {
+    background-color: #FFFFFF !important;
     color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
 }
 div[data-baseweb="popover"] li {
     color: #000000 !important;
@@ -57,7 +60,30 @@ div[data-testid="stAlert"] svg {
     fill: #FFFFFF !important;
 }
 
-/* 6. CAMOUFLAGE THE FOOTER (The Chameleon Strategy) */
+/* 6. FIX TEXT AREA - Force white background & black text */
+textarea {
+    background-color: #FFFFFF !important;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+}
+
+/* 7. FIX ALL INPUT FIELDS */
+input, select {
+    background-color: #FFFFFF !important;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+}
+
+/* 8. OVERRIDE iOS/Safari Dark Mode */
+@media (prefers-color-scheme: dark) {
+    textarea, input, div[data-baseweb="select"] > div {
+        background-color: #FFFFFF !important;
+        color: #000000 !important;
+        -webkit-text-fill-color: #000000 !important;
+    }
+}
+
+/* 9. CAMOUFLAGE THE FOOTER */
 footer {visibility: hidden !important;}
 #MainMenu {visibility: hidden !important;}
 header {visibility: hidden !important;}
@@ -72,12 +98,20 @@ div[class*="viewerBadge"] {
 """
 st.markdown(page_bg_color, unsafe_allow_html=True)
 
-# --- 🔒 SECURITY SECTION (SECURE VERSION) ---
+# --- 🔒 SECURITY SECTION (WITH 7-DAY COOKIE) ---
+cookie_manager = stx.CookieManager()
+
 try:
     SECRET_PASSWORD = st.secrets["APP_PASSWORD"]
 except:
-    st.error("⚠️ Password missing in Secrets! Go to Streamlit Settings -> Secrets and add APP_PASSWORD = 'yourpassword'")
+    st.error("⚠️ Password missing in Secrets! Add APP_PASSWORD in Streamlit Settings -> Secrets.")
     st.stop()
+
+# Check cookie first — if valid, skip login
+auth_cookie = cookie_manager.get(cookie="fifo_auth")
+
+if auth_cookie == "authenticated":
+    st.session_state.authenticated = True
 
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
@@ -85,20 +119,29 @@ if "authenticated" not in st.session_state:
 if not st.session_state.authenticated:
     st.title("🔒 FIFO Path Login")
     st.write("Please enter the access code to continue.")
-    
+
     password_guess = st.text_input("Password:", type="password", placeholder="Enter code here...")
-    
+
     if st.button("Login"):
         if password_guess == SECRET_PASSWORD:
             st.session_state.authenticated = True
+            # Save cookie for 7 days
+            expiry = datetime.now() + timedelta(days=7)
+            cookie_manager.set(
+                "fifo_auth",
+                "authenticated",
+                expires_at=expiry
+            )
             st.rerun()
         else:
             st.error("Incorrect password. Please try again.")
-    
+
     st.stop()
 
-# IF LOGGED IN, SHOW THE APP:
-st.title("🦺 FIFO Interview Coach")
+# --- IF LOGGED IN, SHOW THE APP ---
+
+# Title: 1 line, no emoji
+st.markdown("<h1 style='font-size: 2rem; white-space: nowrap;'>FIFO Interview Coach</h1>", unsafe_allow_html=True)
 st.write("**Role:** Entry Level Utility")
 
 # --- CUSTOM OLIVE GREEN BANNER ---
@@ -118,7 +161,6 @@ except:
 
 # --- THE QUESTION BANK (15 Questions) ---
 questions = {
-    # Section 1: Motivation & Logistics
     "Logistics: 1. Why FIFO?": 
         "There are plenty of local jobs available right now. Why do you specifically want to start a FIFO career?",
     
@@ -131,7 +173,6 @@ questions = {
     "Logistics: 4. Tickets & Licenses": 
         "Do you currently hold a valid Driver's License and a Construction White Card? Are there any other tickets you hold?",
 
-    # Section 2: The FIFO Lifestyle
     "Lifestyle: 5. Remote Experience": 
         "Have you ever lived or worked in a remote location with limited phone reception and amenities? How did you handle it?",
     
@@ -144,7 +185,6 @@ questions = {
     "Lifestyle: 8. Camp Conflict (Dongas)": 
         "You will be living in close quarters with your colleagues. How would you handle a situation where a neighbor is being loud or messy?",
 
-    # Section 3: Safety (Crucial)
     "Safety: 9. Unsafe Orders": 
         "If a supervisor asked you to do a task you felt was unsafe or you weren't trained for, what would you do?",
     
@@ -157,7 +197,6 @@ questions = {
     "Safety: 12. Physical Fitness (Heat)": 
         "The work is physically demanding and often performed in extreme heat. How do you currently maintain your physical fitness?",
 
-    # Section 4: Work Ethic
     "Work Ethic: 13. Repetitive Tasks": 
         "Entry-level roles often involve repetitive, dirty, or labor-intensive tasks like cleaning or digging. How do you stay motivated when the work gets boring?",
     
@@ -168,21 +207,32 @@ questions = {
         "In mining, following Standard Operating Procedures (SOPs) is critical. Can you describe a time you had to follow strict rules to complete a job?"
 }
 
-# --- SELECT QUESTION ---
-selected_label = st.selectbox("Select a Topic to Practice:", list(questions.keys()))
+# --- CHOOSE YOUR HR VOICE ---
+st.markdown("### Choose Your HR Voice")
+voice_map = {
+    "Bruce — Senior HR (Warm Aussie)": "fable",
+    "Dave — Site Manager (Deep & Serious)": "onyx",
+    "Liam — Young Recruiter (Clear & Friendly)": "echo",
+    "Karen — HR Coordinator (Professional & Neutral)": "alloy"
+}
+selected_hr = st.selectbox(
+    "",
+    options=list(voice_map.keys()),
+    index=0
+)
+voice_option = voice_map[selected_hr]
+
+# --- SELECT AN INTERVIEW QUESTION ---
+st.markdown("### 💬 Select an Interview Question")
+selected_label = st.selectbox(
+    "",
+    list(questions.keys()),
+    key="question_select"
+)
 question_text = questions[selected_label]
 
-# --- VOICE SELECTOR (NEW) ---
-st.markdown("🎙️ **Choose Interviewer Voice:**")
-voice_option = st.selectbox(
-    "Pick a voice style:",
-    options=["fable", "onyx", "echo", "alloy"],
-    index=0,
-    help="Fable = closest to Australian male | Onyx = deep & authoritative | Echo = younger male | Alloy = neutral"
-)
-
 # --- QUESTION DISPLAY ---
-st.markdown(f"### 💬 Question:")
+st.markdown("### 💬 Question:")
 st.write(f"**{question_text}**")
 
 # --- AUDIO GENERATION (FIXED FOR iOS) ---
@@ -191,16 +241,16 @@ if st.button(" ▶︎ Play to listen"):
         try:
             response = client.audio.speech.create(
                 model="tts-1",
-                voice=voice_option,         # ← uses selected voice
+                voice=voice_option,
                 input=question_text,
-                response_format="mp3"       # ← explicit MP3 for iOS fix
+                response_format="mp3"
             )
-            audio_bytes = response.content  # ← raw bytes, not file path
+            audio_bytes = response.content
             st.audio(audio_bytes, format="audio/mp3")
         except Exception as e:
             st.warning(f"Could not generate audio: {e}")
 
-# --- FEEDBACK LOGIC (SUPPORTIVE + KEYWORDS) ---
+# --- FEEDBACK LOGIC ---
 user_answer = st.text_area("Type your answer here:", height=150, key=f"answer_{selected_label}")
 
 if st.button("Get Helpful Feedback"):
