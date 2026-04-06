@@ -1,6 +1,6 @@
 import streamlit as st
 from openai import OpenAI
-import extra_streamlit_components as stx
+from streamlit_cookies_controller import CookieController
 from datetime import datetime, timedelta
 
 # 1. Page Configuration
@@ -98,8 +98,8 @@ div[class*="viewerBadge"] {
 """
 st.markdown(page_bg_color, unsafe_allow_html=True)
 
-# --- 🔒 SECURITY SECTION (WITH 7-DAY COOKIE) ---
-cookie_manager = stx.CookieManager()
+# --- 🔒 SECURITY SECTION (7-DAY COOKIE) ---
+controller = CookieController()
 
 try:
     SECRET_PASSWORD = st.secrets["APP_PASSWORD"]
@@ -107,15 +107,17 @@ except:
     st.error("⚠️ Password missing in Secrets! Add APP_PASSWORD in Streamlit Settings -> Secrets.")
     st.stop()
 
-# Check cookie first — if valid, skip login
-auth_cookie = cookie_manager.get(cookie="fifo_auth")
+# Read cookie
+auth_cookie = controller.get("fifo_auth")
+
+# Set session state based on cookie
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
 
 if auth_cookie == "authenticated":
     st.session_state.authenticated = True
 
-if "authenticated" not in st.session_state:
-    st.session_state.authenticated = False
-
+# Show login screen if not authenticated
 if not st.session_state.authenticated:
     st.title("🔒 FIFO Path Login")
     st.write("Please enter the access code to continue.")
@@ -125,13 +127,9 @@ if not st.session_state.authenticated:
     if st.button("Login"):
         if password_guess == SECRET_PASSWORD:
             st.session_state.authenticated = True
-            # Save cookie for 7 days
+            # Set cookie to expire in 7 days
             expiry = datetime.now() + timedelta(days=7)
-            cookie_manager.set(
-                "fifo_auth",
-                "authenticated",
-                expires_at=expiry
-            )
+            controller.set("fifo_auth", "authenticated", expires=expiry)
             st.rerun()
         else:
             st.error("Incorrect password. Please try again.")
