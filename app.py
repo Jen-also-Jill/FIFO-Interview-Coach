@@ -1,5 +1,6 @@
 import streamlit as st
 from openai import OpenAI
+from elevenlabs.client import ElevenLabs
 from streamlit_cookies_controller import CookieController
 from datetime import datetime, timedelta
 
@@ -127,7 +128,6 @@ if not st.session_state.authenticated:
     if st.button("Login"):
         if password_guess == SECRET_PASSWORD:
             st.session_state.authenticated = True
-            # Set cookie to expire in 7 days
             expiry = datetime.now() + timedelta(days=7)
             controller.set("fifo_auth", "authenticated", expires=expiry)
             st.rerun()
@@ -151,10 +151,17 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
+# --- API CLIENTS ---
 try:
-    client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+    openai_client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 except:
     st.error("⚠️ OpenAI API Key is missing. Please set it in Streamlit Secrets.")
+    st.stop()
+
+try:
+    eleven_client = ElevenLabs(api_key=st.secrets["ELEVENLABS_API_KEY"])
+except:
+    st.error("⚠️ ElevenLabs API Key is missing. Please set it in Streamlit Secrets.")
     st.stop()
 
 # --- THE QUESTION BANK (15 Questions) ---
@@ -206,19 +213,21 @@ questions = {
 }
 
 # --- CHOOSE YOUR HR VOICE ---
-st.markdown("### Choose Your HR Voice")
+# ElevenLabs Voice IDs for each HR character
 voice_map = {
-    "Bruce — Senior HR (Warm Aussie)": "fable",
-    "Dave — Site Manager (Deep & Serious)": "onyx",
-    "Liam — Young Recruiter (Clear & Friendly)": "echo",
-    "Karen — HR Coordinator (Professional & Neutral)": "alloy"
+    "Bruce — Senior HR (Warm Aussie)":        "JBFqnCBsd6RMkjVDRZzb",  # George
+    "Dave — Site Manager (Deep & Serious)":    "bIHbv24MWmeRgasZH58o",  # Will  
+    "Liam — Young Recruiter (Clear & Friendly)": "nPczCjzI2devNBz1zQrb", # Charlie
+    "Karen — HR Coordinator (Professional)":   "XB0fDUnXU5powFXDhCwa",  # Charlotte
 }
+
+st.markdown("### Choose Your HR Voice")
 selected_hr = st.selectbox(
     "",
     options=list(voice_map.keys()),
     index=0
 )
-voice_option = voice_map[selected_hr]
+voice_id = voice_map[selected_hr]
 
 # --- SELECT AN INTERVIEW QUESTION ---
 st.markdown("### 💬 Select an Interview Question")
@@ -233,22 +242,34 @@ question_text = questions[selected_label]
 st.markdown("### 💬 Question:")
 st.write(f"**{question_text}**")
 
-# --- AUDIO GENERATION (FIXED FOR iOS) ---
+# --- AUDIO GENERATION (ELEVENLABS - Works on iPhone + Android) ---
 if st.button(" ▶︎ Play to listen"):
     with st.spinner("Loading ..."):
         try:
-            response = client.audio.speech.create(
-                model="tts-1",
-                voice=voice_option,
-                input=question_text,
-                response_format="mp3"
+            # Generate audio with ElevenLabs
+            audio_generator = eleven_client.text_to_speech.convert(
+                voice_id=voice_id,
+                text=question_text,
+                model_id="eleven_multilingual_v2",
+                output_format="mp3_44100_128"
             )
-            audio_bytes = response.content
+            # Convert generator to bytes
+            audio_bytes = b"".join(audio_generator)
+
+            # Play audio — works on iOS and Android
             st.audio(audio_bytes, format="audio/mp3")
+
+            # Backup download button for any stubborn devices
+            st.download_button(
+                label="⬇️ Can't hear it? Download & Play",
+                data=audio_bytes,
+                file_name="question.mp3",
+                mime="audio/mp3"
+            )
         except Exception as e:
             st.warning(f"Could not generate audio: {e}")
 
-# --- FEEDBACK LOGIC ---
+# --- FEEDBACK LOGIC (OPENAI) ---
 user_answer = st.text_area("Type your answer here:", height=150, key=f"answer_{selected_label}")
 
 if st.button("Get Helpful Feedback"):
@@ -275,7 +296,7 @@ if st.button("Get Helpful Feedback"):
         """
         
         with st.spinner("Coach is writing some tips for you..."):
-            response = client.chat.completions.create(
+            response = openai_client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=[
                     {"role": "system", "content": system_prompt},
