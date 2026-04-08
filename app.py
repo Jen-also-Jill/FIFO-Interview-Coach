@@ -228,8 +228,8 @@ questions = {
 # ElevenLabs Voice IDs for each HR character
 voice_map = {
     "Bruce — Senior HR ":        "JBFqnCBsd6RMkjVDRZzb",  # George
-    "Dave — Site Manager ":    "bIHbv24MWmeRgasZH58o",  # Will  
-    "Charlie — General Recruiter ": "nPczCjzI2devNBz1zQrb", # Charlie
+    "George — Site Manager  ":    "bIHbv24MWmeRgasZH58o",  # Charlie 
+    "Charlie — General Recruiter ": "nPczCjzI2devNBz1zQrb", # Will
     "Charlotte — HR Coordinator ":   "XB0fDUnXU5powFXDhCwa",  # Charlotte
 }
 
