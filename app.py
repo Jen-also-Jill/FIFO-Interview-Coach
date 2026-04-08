@@ -33,6 +33,18 @@ h1, h2, h3, p, .stMarkdown, label, li, .stTextInput > label {
     border: 1px solid #000000 !important; 
 }
 
+/* FIX DOWNLOAD BUTTON - Match page background so it looks subtle */
+.stDownloadButton > button {
+    background-color: #828f7e !important;
+    color: #FFFFFF !important;
+    border: 1px solid #FFFFFF !important;
+    font-weight: normal !important;
+}
+.stDownloadButton > button:hover {
+    background-color: #6b7a67 !important;
+    color: #FFFFFF !important;
+}
+
 /* 4. FIX THE DROPDOWN MENU */
 div[data-baseweb="select"] > div {
     background-color: #FFFFFF !important;
