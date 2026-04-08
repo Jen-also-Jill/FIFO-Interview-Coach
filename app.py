@@ -227,10 +227,10 @@ questions = {
 # --- CHOOSE YOUR HR VOICE ---
 # ElevenLabs Voice IDs for each HR character
 voice_map = {
-    "Bruce — Senior HR (Warm Aussie)":        "JBFqnCBsd6RMkjVDRZzb",  # George
-    "Dave — Site Manager (Deep & Serious)":    "bIHbv24MWmeRgasZH58o",  # Will  
-    "Liam — Young Recruiter (Clear & Friendly)": "nPczCjzI2devNBz1zQrb", # Charlie
-    "Karen — HR Coordinator (Professional)":   "XB0fDUnXU5powFXDhCwa",  # Charlotte
+    "Bruce — Senior HR ":        "JBFqnCBsd6RMkjVDRZzb",  # George
+    "Dave — Site Manager ":    "bIHbv24MWmeRgasZH58o",  # Will  
+    "Charlie — General Recruiter ": "nPczCjzI2devNBz1zQrb", # Charlie
+    "Charlotte — HR Coordinator ":   "XB0fDUnXU5powFXDhCwa",  # Charlotte
 }
 
 st.markdown("### Choose Your HR Voice")
