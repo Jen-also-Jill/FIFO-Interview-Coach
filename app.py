@@ -121,26 +121,23 @@ div[class*="viewerBadge"] {
 """
 st.markdown(page_bg_color, unsafe_allow_html=True)
 
-# --- 🔒 SECURITY SECTION (7-DAY COOKIE) ---
-controller = CookieController()
-
+# --- 🔒 SECURITY SECTION (URL PARAMS METHOD) ---
 try:
     SECRET_PASSWORD = st.secrets["APP_PASSWORD"]
 except:
     st.error("⚠️ Password missing in Secrets! Add APP_PASSWORD in Streamlit Settings -> Secrets.")
     st.stop()
 
-# Read cookie
-auth_cookie = controller.get("fifo_auth")
-
-# Set session state based on cookie
+# Initialize session state
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 
-if auth_cookie == "authenticated":
+# Check URL params first
+params = st.query_params
+if params.get("auth") == "true":
     st.session_state.authenticated = True
 
-# Show login screen if not authenticated
+# Show login if not authenticated
 if not st.session_state.authenticated:
     st.title("🔒 FIFO Path Login")
     st.write("Please enter the access code to continue.")
@@ -150,8 +147,8 @@ if not st.session_state.authenticated:
     if st.button("Login"):
         if password_guess == SECRET_PASSWORD:
             st.session_state.authenticated = True
-            expiry = datetime.now() + timedelta(days=7)
-            controller.set("fifo_auth", "authenticated", expires=expiry)
+            # Add auth to URL so it persists
+            st.query_params["auth"] = "true"
             st.rerun()
         else:
             st.error("Incorrect password. Please try again.")
