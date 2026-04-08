@@ -1,8 +1,7 @@
 import streamlit as st
 from openai import OpenAI
 from elevenlabs.client import ElevenLabs
-from streamlit_cookies_controller import CookieController
-from datetime import datetime, timedelta
+import time
 
 # 1. Page Configuration
 st.set_page_config(page_title="FIFO Interview Coach", page_icon="🦺")
@@ -61,6 +60,7 @@ div[data-baseweb="select"] svg {
     opacity: 1 !important;
     fill: #000000 !important;
 }
+
 div[data-baseweb="popover"] li {
     color: #000000 !important;
     background-color: #FFFFFF !important;
@@ -147,7 +147,6 @@ if not st.session_state.authenticated:
     if st.button("Login"):
         if password_guess == SECRET_PASSWORD:
             st.session_state.authenticated = True
-            # Add auth to URL so it persists
             st.query_params["auth"] = "true"
             st.rerun()
         else:
@@ -232,95 +231,12 @@ questions = {
 }
 
 # --- CHOOSE YOUR HR VOICE ---
-# ElevenLabs Voice IDs for each HR character
 voice_map = {
-    "Bruce — Senior HR ":        "JBFqnCBsd6RMkjVDRZzb",  # George
-    "George — Site Manager  ":    "bIHbv24MWmeRgasZH58o",  # Charlie 
-    "Charlie — General Recruiter ": "nPczCjzI2devNBz1zQrb", # Will
-    "Charlotte — HR Coordinator ":   "XB0fDUnXU5powFXDhCwa",  # Charlotte
+    "Liam — Senior HR":          "nPczCjzI2devNBz1zQrb",
+    "Dave — Site Manager":       "bIHbv24MWmeRgasZH58o",
+    "Bruce — General Recruiter": "JBFqnCBsd6RMkjVDRZzb",
+    "Karen — HR Coordinator":    "XB0fDUnXU5powFXDhCwa",
 }
 
 st.markdown("### Choose Your HR Voice")
-selected_hr = st.selectbox(
-    "",
-    options=list(voice_map.keys()),
-    index=0
-)
-voice_id = voice_map[selected_hr]
-
-# --- SELECT AN INTERVIEW QUESTION ---
-st.markdown("### 💬 Select an Interview Question")
-selected_label = st.selectbox(
-    "",
-    list(questions.keys()),
-    key="question_select"
-)
-question_text = questions[selected_label]
-
-# --- QUESTION DISPLAY ---
-st.markdown("### 💬 Question:")
-st.write(f"**{question_text}**")
-
-# --- AUDIO GENERATION (ELEVENLABS - Works on iPhone + Android) ---
-if st.button(" ▶︎ Play to listen"):
-    with st.spinner("Loading ..."):
-        try:
-            # Generate audio with ElevenLabs
-            audio_generator = eleven_client.text_to_speech.convert(
-                voice_id=voice_id,
-                text=question_text,
-                model_id="eleven_multilingual_v2",
-                output_format="mp3_44100_128"
-            )
-            # Convert generator to bytes
-            audio_bytes = b"".join(audio_generator)
-
-            # Play audio — works on iOS and Android
-            st.audio(audio_bytes, format="audio/mp3")
-
-            # Backup download button for any stubborn devices
-            st.download_button(
-                label="⬇️ Can't hear it? Download & Play",
-                data=audio_bytes,
-                file_name="question.mp3",
-                mime="audio/mp3"
-            )
-        except Exception as e:
-            st.warning(f"Could not generate audio: {e}")
-
-# --- FEEDBACK LOGIC (OPENAI) ---
-user_answer = st.text_area("Type your answer here:", height=150, key=f"answer_{selected_label}")
-
-if st.button("Get Helpful Feedback"):
-    if not user_answer:
-        st.warning("Please type your answer first!")
-    else:
-        system_prompt = """
-        You are a supportive Job Interview Coach helping candidates who speak English as a Second Language (ESL).
-        The candidates are Backpackers (WHV) applying for entry-level mining jobs in Australia.
-        
-        Your Goal:
-        1. Be kind, encouraging, and clear.
-        2. Keep the feedback simple (no big corporate words).
-        3. Teach them the specific 'Keywords' that Australian Mining Recruiters look for.
-
-        Output Structure (Use Markdown):
-        **👍🏻 Feedback:** (Write 1 simple paragraph. Tell them what was good and fix any major English mistakes nicely.)
-
-        **✨ Better ways to say it:**
-        (Provide 2 simple, strong example sentences they can memorize. Use simple grammar but professional words.)
-
-        **💡 Pro Tip (What HR wants to hear):**
-        (Explain ONE key concept or buzzword they should use for this specific question. E.g., 'Take 5', 'Duty of Care', 'Reliability', 'Hydration', 'SOPs'. Explain WHY the recruiter likes this word.)
-        """
-        
-        with st.spinner("Coach is writing some tips for you..."):
-            response = openai_client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": f"Question: {question_text}. Candidate Answer: {user_answer}. Help them improve."}
-                ]
-            )
-            st.success("📝 **Coach's Tips:**")
-            st.markdown(response.choices[0].message.content)
+selec
