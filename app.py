@@ -239,4 +239,80 @@ voice_map = {
 }
 
 st.markdown("### Choose Your HR Voice")
-selec
+selected_hr = st.selectbox(
+    "",
+    options=list(voice_map.keys()),
+    index=0
+)
+voice_id = voice_map[selected_hr]
+
+# --- SELECT AN INTERVIEW QUESTION ---
+st.markdown("### 💬 Select an Interview Question")
+selected_label = st.selectbox(
+    "",
+    list(questions.keys()),
+    key="question_select"
+)
+question_text = questions[selected_label]
+
+# --- QUESTION DISPLAY ---
+st.markdown("### 💬 Question:")
+st.write(f"**{question_text}**")
+
+# --- AUDIO GENERATION (ELEVENLABS) ---
+if st.button(" ▶︎ Play to listen"):
+    with st.spinner("Loading ..."):
+        try:
+            audio_generator = eleven_client.text_to_speech.convert(
+                voice_id=voice_id,
+                text=question_text,
+                model_id="eleven_multilingual_v2",
+                output_format="mp3_44100_128"
+            )
+            audio_bytes = b"".join(audio_generator)
+            st.audio(audio_bytes, format="audio/mp3")
+            st.download_button(
+                label="⬇️ Can't hear it? Download & Play",
+                data=audio_bytes,
+                file_name="question.mp3",
+                mime="audio/mp3"
+            )
+        except Exception as e:
+            st.warning(f"Could not generate audio: {e}")
+
+# --- FEEDBACK LOGIC (OPENAI) ---
+user_answer = st.text_area("Type your answer here:", height=150, key=f"answer_{selected_label}")
+
+if st.button("Get Helpful Feedback"):
+    if not user_answer:
+        st.warning("Please type your answer first!")
+    else:
+        system_prompt = """
+        You are a supportive Job Interview Coach helping candidates who speak English as a Second Language (ESL).
+        The candidates are Backpackers (WHV) applying for entry-level mining jobs in Australia.
+        
+        Your Goal:
+        1. Be kind, encouraging, and clear.
+        2. Keep the feedback simple (no big corporate words).
+        3. Teach them the specific 'Keywords' that Australian Mining Recruiters look for.
+
+        Output Structure (Use Markdown):
+        **👍🏻 Feedback:** (Write 1 simple paragraph. Tell them what was good and fix any major English mistakes nicely.)
+
+        **✨ Better ways to say it:**
+        (Provide 2 simple, strong example sentences they can memorize. Use simple grammar but professional words.)
+
+        **💡 Pro Tip (What HR wants to hear):**
+        (Explain ONE key concept or buzzword they should use for this specific question. E.g., 'Take 5', 'Duty of Care', 'Reliability', 'Hydration', 'SOPs'. Explain WHY the recruiter likes this word.)
+        """
+        
+        with st.spinner("Coach is writing some tips for you..."):
+            response = openai_client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": f"Question: {question_text}. Candidate Answer: {user_answer}. Help them improve."}
+                ]
+            )
+            st.success("📝 **Coach's Tips:**")
+            st.markdown(response.choices[0].message.content)
