@@ -50,6 +50,16 @@ div[data-baseweb="select"] > div {
     background-color: #FFFFFF !important;
     color: #000000 !important;
     -webkit-text-fill-color: #000000 !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+}
+
+/* FORCE DROPDOWN ARROW ON iOS */
+div[data-baseweb="select"] svg {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    fill: #000000 !important;
 }
 div[data-baseweb="popover"] li {
     color: #000000 !important;
